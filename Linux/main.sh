@@ -101,10 +101,6 @@ banner() {
     cat << "EOF"
 ╔════════════════════════════════════════════════════════════╗
 ║     CyberPatriot Ubuntu Hardening Suite v4.0               ║
-║           Enhanced Competition Edition                     ║
-║                                                            ║
-║  Features: Intelligent Service Management                 ║
-║           Kernel Hardening | Advanced Detection           ║
 ╚════════════════════════════════════════════════════════════╝
 EOF
     echo -e "${NC}"
