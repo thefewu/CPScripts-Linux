@@ -1,9 +1,9 @@
 #!/bin/bash
-#
+
 # CyberPatriot Point Optimization Script
-# - Runs high-yield actions in minutes
-# - Summarizes most common missed actions
-#
+# Runs high-yield actions in minutes
+# Summarizes most common missed actions
+
 
 echo "== Point Optimization =="
 
