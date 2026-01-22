@@ -16,7 +16,7 @@ Scripts are designed to be run independently—with clear separation between har
     - **Warning:** This script can break your system and lock out users (bootloader, network, kernel, and obscure settings).  
       You **most likely do not need to use it** for competition scoring, *unless you are absolutely certain the scenario requires it.*  
       If you do run it, make **SURE** to manually go through the code line by line and confirm that you want to make each change listed!
-4. Run `browser_harden.sh` if you want to do that, otherwise, maunal is not too dificult. Make sure to agree with everything this script is doing first though.
+4. Run `browser_harden.sh` if you want to do that, otherwise, manually doing so is not too dificult. Make sure to agree with everything this script is doing first though.
 5. Run `user_audit.sh`, `service_analyzer.sh`, and `forensics.sh` to generate additional security review or reporting for manual scoring.
 6. Run `media_scanner.sh` if media compliance is part of your scoring or requirements.
 7. Review all `/root/` log and report files after completion, before submitting image/box for scoring.
