@@ -881,6 +881,49 @@ check_suspicious_files() {
     fi
 }
 
+report_security_findings() {
+    log "Generating advanced security report (for manual review)..."
+
+    # SUID/SGID binaries
+    find / -perm /6000 -type f -exec ls -ld {} \; 2>/dev/null > /root/suid_sgid_files.txt
+
+    # Users with login shells
+    awk -F: '$7 !~ /(nologin|false)/ {print $1 " " $7}' /etc/passwd | grep -vE 'root|sys|daemon' > /root/login_shell_users.txt
+
+    # Listening ports/services
+    ss -tulnp | grep -v "127.0.0.1" > /root/listening_ports.txt
+
+    # SSH authorized_keys
+    find /home -name "authorized_keys" -exec cat {} \; > /root/ssh_auth_keys.txt
+
+    # systemd custom service units
+    find /etc/systemd/system /lib/systemd/system -type f -exec grep -Ei 'ExecStart=' {} \; > /root/systemd_services.txt
+
+    # rc.local content (if present)
+    [ -f /etc/rc.local ] && cat /etc/rc.local > /root/rc.local.txt
+
+    # User crontabs listing
+    for user in $(cut -f1 -d: /etc/passwd); do crontab -u $user -l 2>/dev/null; done > /root/all_user_crontabs.txt
+
+    # Shadow group membership
+    getent group shadow > /root/shadow_group.txt
+
+    # /etc/shells for odd shells
+    cat /etc/shells > /root/valid_shells.txt
+
+    # Home directory permissions (flag if not 700)
+    ls -ld /home/* | grep -v "drwx------" > /root/insecure_home_dirs.txt
+
+    # Sudoers syntax check
+    visudo -c > /root/sudoers_lint.txt 2>&1
+
+    # Malware/rootkit scans
+    rkhunter --update && rkhunter --check --rwo > /root/rkhunter_report.txt
+    chkrootkit > /root/chkrootkit_report.txt
+
+    log "Advanced security report files generated in /root/"
+}
+
 main_menu() {
     banner
     
@@ -940,6 +983,8 @@ full_automatic() {
     check_suspicious_files
     check_worldwritable
     
+    report_security_findings
+    
     finish
 }
 
@@ -979,6 +1024,8 @@ interactive_mode() {
     ask_and_run "Check for suspicious files (.rhosts, .netrc)?" check_suspicious_files
     ask_and_run "Scan for world-writable files?" check_worldwritable
     
+    report_security_findings
+    
     finish
 }
 
@@ -993,6 +1040,8 @@ quick_essential() {
     configure_firewall
     remove_prohibited_software
     secure_file_permissions
+    
+    report_security_findings
     
     finish
 }
