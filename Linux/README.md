@@ -128,5 +128,3 @@ sudo bash media_scanner.sh        # Media compliance check
 - **If unsure, leave questionable users/files/services in place and document in your report.**
 
 ---
-
-**For questions or improvements, open an issue or submit a pull request with your best competition tips!**
