@@ -42,8 +42,8 @@ banner() {
     echo -e "${BLUE}"
     cat << "EOF"
 ╔══════════════════════════════════════════════════════════╗
-║      CyberPatriot Advanced Hardening Suite v1.0          ║
-║   GRUB | IPv6 | File Integrity | Additional Hardening   ║
+║            CyberPatriot Advanced Hardening               ║
+║   GRUB | IPv6 | File Integrity | Additional Hardening    ║
 ╚══════════════════════════════════════════════════════════╝
 EOF
     echo -e "${NC}"
