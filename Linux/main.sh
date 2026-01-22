@@ -1013,25 +1013,14 @@ finish() {
     log "════════════════════════════════════════════════════════"
     echo
     warn "IMPORTANT NEXT STEPS:"
-    echo "1. Run forensics.sh to check for malware/backdoors"
-    echo "2. Run user_audit.sh to verify user accounts"
-    echo "3. Run service_analyzer.sh to review services"
-    echo "4. Run media_scanner.sh to find prohibited files"
-    echo "5. Check README for required services and verify they work"
-    echo "6. Review all generated reports in /root/"
+    echo "1. Check README for required services and verify they work"
+    echo "2. Review all generated reports in /root/"
     echo
     echo -e "${GREEN}Files to review:${NC}"
     echo "  - $LOGFILE (hardening log)"
     echo "  - /root/sudoers_nopasswd.txt (sudo without password)"
     echo "  - /root/world_writable_files.txt (security risk)"
     echo "  - /root/rhosts_files.txt (if exists)"
-    echo
-    echo -e "${YELLOW}Next commands to run:${NC}"
-    echo "  sudo ./forensics.sh"
-    echo "  sudo ./user_audit.sh"
-    echo "  sudo ./service_analyzer.sh"
-    echo "  sudo ./media_scanner.sh"
-    echo
     read -p "Press Enter to continue..."
 }
 
