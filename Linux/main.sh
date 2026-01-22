@@ -1,8 +1,7 @@
 #!/bin/bash
 
-# CyberPatriot Ubuntu Hardening Script - Enhanced Main Module
-# Version: 4.0 - Comprehensive hardening with intelligent service management
-# Compatible with Ubuntu 18.04, 20.04, 22.04, 24.04
+# CyberPatriot Ubuntu Hardening Script
+# Compatible with Ubuntu 18.04, 20.04, 22.04, 24.04 and probably others idk
 
 set -e
 
