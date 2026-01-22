@@ -1,134 +1,132 @@
-# CyberPatriot Linux Hardening Suite
+# CPScripts-Linux
 
-**Version:** 4.0 – Competition Ready  
-**Target OS:** Ubuntu 18.04, 20.04, 22.04, 24.04  
-**Last Update:** January 2026
+**Ubuntu scripts I'm trying out for CyberPatriot, competition, and best practice Linux system hardening and auditing.**
 
-## Quick Start
-
-If you’re pressed for time:
-1. Read the competition scenario notes/README.
-2. List all authorized users and required services (web, database, file share, email).
-3. Run `./user_audit.sh` and remove unauthorized users interactively.
-4. Run `./service_analyzer.sh` to review services, disable unnecessary ones (be careful – never disable required ones).
-5. Run `./main.sh` in interactive mode to apply core system updates and basic hardening.
-6. Run `./forensics.sh` to scan for malware, backdoors, or suspicious files.
-7. Run `./media_scanner.sh` to find and confirm deletion of prohibited media/games.
-8. Verify critical services (apache2, mysql, ssh, ufw) are still running after changes.
-9. Run `./point_optimizer.sh` for additional top scoring actions.
-10. Review findings before making permanent changes. Back up configurations and user lists.
-
-## What These Scripts Do
-
-- **user_audit.sh**  
-  Reviews all users, detects unauthorized or backdoor accounts (UID 0), audits sudo/admin lists, forces password resets, and removes unauthorized access.
-- **service_analyzer.sh**  
-  Audits active and enabled services; helps you avoid disabling required system and scenario services; flags security risks like FTP, Telnet, Samba, unchecked databases.
-- **main.sh**  
-  Applies core system hardening (system updates, password policies, PAM config, SSH+firewall hardening, network settings/fixes, file permissions, installs recommended security packages, disables hacking tools and USB storage, configures logging).
-- **forensics.sh**  
-  Scans for common malware, hacking tools, backdoors, unauthorized SSH keys, odd logins, unusual crontabs, suspicious hidden files, modified system binaries, odd open ports or processes.
-- **media_scanner.sh**  
-  Locates prohibited images, video, music, games, or large archives in user directories, downloads, desktop, trash – prompts you to confirm and delete.
-- **browser_harden.sh**  
-  Applies enterprise/competition security baseline to browsers (Firefox, Chrome): disables password storage, developer/incognito modes, enforces privacy.
-- **advanced_hardening.sh**  
-  Additional system hardening: GRUB password protection, disables IPv6/network protocols, locks down /tmp, applies AIDE file integrity monitoring, disables crash reporting, configures login banners, audits SUID/SGID binaries.
-- **point_optimizer.sh**  
-  High-yield, quick point wins: removes unauthorized users, audits sudoers, reviews firewall, checks for hacking tools, confirms updates applied.
-
-## Before You Run Anything
-
-**Warning:** These scripts make real changes to running systems.
-- Disabling the wrong service, deleting the wrong user, or breaking networking will cost major points and may lock you out.
-- Always work interactively and reference competition/school notes before making irreversible changes.
-
-**Checklist:**
-- List authorized users and services. Cross-check with scenario notes.
-- Back up `/etc/passwd`, `/etc/shadow`, SSH configs, UFW/firewall rules.
-- Keep a log of all changes.
-- Run scripts in interactive mode; do not trust automatic mode unless standard desktop is confirmed.
-
-## Script Execution Order
-
-Recommended order for maximum points and lowest risk:
-
-**Phase 1: Discovery**
-- `user_audit.sh` (view only, no changes) – make a user list
-- `service_analyzer.sh` (discover only) – note required and prohibited services
-- `forensics.sh` – identify forensic findings (malware, backdoors, odd files)
-- `media_scanner.sh` (view only) – list prohibited files and games.
-
-**Phase 2: Removal and Management**
-- `user_audit.sh` (interactive, fix users/groups/passwords)
-- `service_analyzer.sh` (interactive, disable unnecessary services)
-
-**Phase 3: System Hardening**
-- `main.sh` (interactive, core hardening – only use auto mode for standard workstation without scenario complexity)
-- `advanced_hardening.sh` (adds extra security – run after main.sh)
-
-**Phase 4: Final Sweep**
-- `browser_harden.sh`
-- `media_scanner.sh` (interactive, confirm and delete files)
-- `point_optimizer.sh`
-- Manual quick-checks (see below)
-
-**Phase 5: Verification**
-- Check all authorized users and required services are present and running.
-- Confirm no unauthorized users, open ports, or hacking tools remain.
-- Review `/root/forensics_findings.txt`, `/root/prohibited_media.txt`, and other log files for remaining issues.
-- Confirm firewall is active.
-- Review SUID/SGID and world-writable file reports.
-
-## Common Manual Checks
-
-After running scripts, review:
-```bash
-# World writable files
-sudo find / -xdev -type f -perm -0002 -ls 2>/dev/null
-
-# Files with no owner/group
-sudo find / -xdev -nouser -o -nogroup 2>/dev/null
-
-# SUID/SGID binaries
-sudo find / -xdev -type f \( -perm -4000 -o -perm -2000 \) -ls 2>/dev/null
-
-# Empty password fields
-sudo awk -F: '($2 == "") {print $1}' /etc/shadow
-
-# Listening ports
-sudo ss -tulpn
-
-# sudoers entries with NOPASSWD
-grep -E -v '^#|^Defaults' /etc/sudoers /etc/sudoers.d/* 2>/dev/null | grep NOPASSWD
-
-# /etc/hosts for suspicious entries
-cat /etc/hosts | grep -v "^#" | grep -v "127.0.0.1"
-```
-
-## Recovery/Troubleshooting
-
-If points are lost or something breaks:
-- Restore backups and re-add necessary users/services.
-- Restart services (systemctl start service_name).
-- Fix broken network/firewall by restoring configs or disabling UFW temporarily.
-- Confirm SSH works after hardening changes (sshd -t for config test).
-- Re-run browser and forensics scripts after major changes.
-
-## Forensic Questions – How To Answer
-
-Common forensic tasks:
-- Find users with hidden backdoor crontabs: `for user in $(cut -d: -f1 /etc/passwd); do sudo crontab -u $user -l 2>/dev/null; done`
-- Find which ports are open and what process is using them.
-- Find evidence of login or password hints in home directories/logs.
-- Review for recent suspicious binaries.
-- Review recently installed/modified packages: `grep ' install ' /var/log/dpkg.log | tail`
-
-## Version History
-
-See the bottom of this README for full history and all security changes by version.
+This repo is organized for modular, safe, and competition-style use on Ubuntu systems (18.04, 20.04, 22.04, 24.04).  
+Scripts are designed to be run independently—with clear separation between hardening, auditing, forensics, and media compliance checks.
 
 ---
 
-This documentation, scripts, and checklists are adapted from the latest Ubuntu security guidelines and CyberPatriot competitive resources.  
-**Use them with caution, always reference scenario requirements, and never make automatic changes without reviewing output first.**
+## How to Use This Repository
+
+**Recommended workflow:**
+1. **Review scenario/README scoring requirements before anything else!**
+2. **Run `main.sh`** to perform core system hardening and configuration.
+3. **(Optional, but use with extreme caution) Run `advanced_hardening.sh` only if you need extra security controls.**
+    - **Warning:** This script can break your system and lock out users (bootloader, network, kernel, and obscure settings).  
+      You **most likely do not need to use it** for competition scoring, *unless you are absolutely certain the scenario requires it.*  
+      If you do run it, make **SURE** to manually go through the code line by line and confirm that you want to make each change listed!
+4. Run `user_audit.sh`, `service_analyzer.sh`, and `forensics.sh` to generate additional security review or reporting for manual scoring.
+5. Run `media_scanner.sh` if media compliance is part of your scoring or requirements.
+6. Review all `/root/` log and report files after completion, before submitting image/box for scoring.
+
+---
+
+## Script Descriptions
+
+### **main.sh**
+- **Core hardening for Ubuntu:**  
+  Updates system, configures auto-updates, hardens user accounts and passwords (inc. aging, complexity, lockout), disables guest/root logins, aggressively disables unnecessary/unused services.
+- **Configures PAM, SSH, UFW firewall, sysctl (network, kernel hardening), cron/at whitelisting, critical file permissions, sudoers audit, USB/storage restrictions, installs security tools, restricts compilers and removes prohibited/unnecessary tools/games/hacking programs (incl. snap packages).**
+- **Includes robust backup creation and a scoring system for tracking progress.**
+- **Interactive and automatic modes available; review points in log.**
+- **Now includes advanced reporting at the end (see reports below).**
+
+### **advanced_hardening.sh**
+- **Extra security moves** often needed for upper-level scoring:
+  - GRUB/bootloader password protection/checks
+  - IPv6 disabling/hardening (if not required)
+  - /tmp and /var/tmp memory protections
+  - NFS, core dump restrictions
+  - Kernel/sysctl tweaks (deep privacy, logging, signal protections)
+  - TCP wrappers and default account auditing
+
+**⚠️ WARNING:**
+- `advanced_hardening.sh` applies very aggressive security settings.
+- **You almost never need it for CyberPatriot rounds, unless you are specifically instructed.**
+- Running it can break network connectivity, cause boot failures, lock out legitimate users, and more.
+- **BEFORE** you run it:
+    - Review every line of code in `advanced_hardening.sh` and verify you want every change.
+    - Confirm scenario requirements.
+    - Expect possible breakage!
+
+### **user_audit.sh**
+- **User and group audit:**  
+  Reviews all users and groups for unauthorized, backdoor, or UID 0 (“root-like”) accounts, audits admin/sudo users, optionally forces password reset, and warns/removes unauthorized access.
+
+### **service_analyzer.sh**
+- **Active/enabled services audit:**  
+  Lists all running/enabled services for safe review so you don’t disable needed competition/scenario services by accident; especially flags FTP, SMB, databases, Telnet, and other risky/bonus-point services.
+
+### **forensics.sh**
+- **Comprehensive security and malware check:**  
+  Scans for suspicious/hidden files, backdoors, unauthorized SSH keys, odd logins/cron jobs, modified critical system binaries, unusual listening ports and processes, loaded kernel modules, recent changes, and more.
+- **Runs rootkit checks (`rkhunter`, `chkrootkit`) and generates reports.**
+
+### **media_scanner.sh**
+- **Prohibited/inappropriate media scanner:**  
+  Flags images, videos, audio, or other forbidden media according to competition/policy. Run after the core hardening and before final review if required.
+
+---
+
+## Advanced Automated Reporting (added to `main.sh`)
+
+After running `main.sh`, you will find advanced audit reports in `/root/` for additional scoring/manual review:
+
+- `/root/sudoers_nopasswd.txt` – Sudo lines allowing passwordless execution (security risk)
+- `/root/world_writable_files.txt` – World-writable file scan (backgrounded)
+- `/root/rhosts_files.txt` – .rhosts files found/removed
+- `/root/netrc_files.txt` – .netrc files found
+- `/root/suid_sgid_files.txt` – SUID/SGID binaries on system
+- `/root/login_shell_users.txt` – Users with active login shells (may be backdoors)
+- `/root/listening_ports.txt` – All listening ports/services
+- `/root/ssh_auth_keys.txt` – Authorized SSH keys for all users
+- `/root/systemd_services.txt` – Executable systemd/unit scripts
+- `/root/rc.local.txt` – rc.local startup script contents
+- `/root/all_user_crontabs.txt` – All user crontab jobs
+- `/root/shadow_group.txt` – Shadow group membership
+- `/root/valid_shells.txt` – Shells listed in /etc/shells
+- `/root/insecure_home_dirs.txt` – Home directories with weak permissions
+- `/root/sudoers_lint.txt` – `visudo -c` output for syntax errors
+- `/root/rkhunter_report.txt` – Rootkit report
+- `/root/chkrootkit_report.txt` – Malware/rootkit scan report
+
+---
+
+## Compatibility and Safety
+
+- **All scripts are modular and independent.**  
+  Run any in any order; outputs do not collide and files are not overwritten except for expected logs and reports.
+- **No script auto-modifies other scripts’ output/configs.**  
+  Vulnerable changes (like user removal/unlocking/disabling services) are **always logged/reported before modification**—review reports before making further changes!
+- **Backups automatically created before configuration changes.**  
+  See `main.sh` for backup details.
+
+## Additional Resources
+
+- [Marshall Cyber Club Ultimate Linux Checklist (PDF)](https://marshallcyberclub.github.io/resources/Ultimate%20Linux%20Checklist.pdf)
+- [SANS Linux Security Checklist (PDF)](https://www.sans.org/media/score/checklists/LinuxCheatsheet_2.pdf)
+- [decalage2/awesome-security-hardening](https://github.com/decalage2/awesome-security-hardening) – up-to-date links to Linux hardening checklists, guides, and exam resources
+- [How to Win CyberPatriot (blog)](https://akshayrohatgi.com/blog/posts/How-To-Win-CyberPatriot/)
+- [Sample competition scripts](https://github.com/tanav-malhotra/cyberpatriot-scripts/tree/main/linux), [Other script repos](https://github.com/BiermanM/CyberPatriot-Scripts), [More](https://github.com/Exaphis/cyberpatriot-ubuntu-script)
+
+## Quick Start
+
+```sh
+sudo bash main.sh         # Choose your hardening mode (full auto/interactive/quick)
+sudo bash advanced_hardening.sh   # (OPTIONAL, ONLY IF YOU KNOW WHAT YOU ARE DOING)
+sudo bash forensics.sh    # Comprehensive audit/forensics scan
+sudo bash user_audit.sh   # Advanced user/group audit
+sudo bash service_analyzer.sh     # Service review/report
+sudo bash media_scanner.sh        # Media compliance check
+```
+
+## After Running Scripts
+
+- **Review all `/root/` logs and reports before scoring or submitting!**
+- **Check README for competition requirements—DO NOT disable required/bonus services.**
+- **If unsure, leave questionable users/files/services in place and document in your report.**
+
+---
+
+**For questions or improvements, open an issue or submit a pull request with your best competition tips!**
