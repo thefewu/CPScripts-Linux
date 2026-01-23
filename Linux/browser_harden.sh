@@ -81,7 +81,7 @@ migrate_snap_to_deb() {
     cat > /etc/apt/preferences.d/mozilla-firefox <<'EOF'
 Package: *
 Pin: release o=LP-PPA-mozillateam
-Pin-Priority: 1001
+Pin-Priority: 950
 EOF
     
     log "Installing Firefox from PPA..."
