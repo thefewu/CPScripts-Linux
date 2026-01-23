@@ -217,7 +217,7 @@ check_core_dumps() {
         score 1 "Core dumps disabled in limits.conf"
     fi
     
-    # Disable core dumps in sysctl (already done in main.sh but verify)
+    # Disable core dumps in sysctl
     if ! grep -q "fs.suid_dumpable" /etc/sysctl.d/99-cyberpatriot.conf 2>/dev/null; then
         echo "fs.suid_dumpable = 0" >> /etc/sysctl.d/99-cyberpatriot.conf
         sysctl -p /etc/sysctl.d/99-cyberpatriot.conf >> "$LOGFILE" 2>&1
@@ -383,7 +383,6 @@ check_setuid_setgid() {
 configure_tcp_wrappers() {
     log "Configuring TCP Wrappers..."
     
-    # Install if not present
     if ! dpkg -l | grep -q tcpd; then
         apt-get install -y tcpd >> "$LOGFILE" 2>&1
     fi
@@ -404,9 +403,7 @@ configure_tcp_wrappers() {
 secure_at_cron() {
     log "Additional cron/at security..."
     
-    # Ensure cron daemon is running but secure
     if systemctl is-active --quiet cron; then
-        # Already secured in main.sh, just verify
         if [ -f /etc/cron.allow ]; then
             chmod 600 /etc/cron.allow
             chmod 600 /etc/at.allow 2>/dev/null || true
